@@ -15,39 +15,25 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|string',
+            'email'    => 'required|email|string',
             'password' => 'required|string',
         ]);
 
-        // Cek login via email atau username
-        $loginType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-        $credentials = [
-            $loginType => $request->email,
-            'password' => $request->password,
-        ];
-
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-
-            // [FIX UTAMA DI SINI]
-            // Sebelumnya error karena me-redirect ke 'buildings.index' (tidak ada).
-            // Ubah menjadi 'building.select' (halaman pilih gedung).
             return redirect()->route('building.select');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
-        ])->onlyInput('email');
+        return back()
+            ->withErrors(['email' => 'Email atau password salah.'])
+            ->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('login');
     }
 }
