@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Try to login with email or username
+        // Cek login via email atau username
         $loginType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         $credentials = [
@@ -30,11 +30,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('buildings.index'));
+            // [FIX UTAMA DI SINI]
+            // Sebelumnya error karena me-redirect ke 'buildings.index' (tidak ada).
+            // Ubah menjadi 'building.select' (halaman pilih gedung).
+            return redirect()->route('building.select');
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
     }
 
