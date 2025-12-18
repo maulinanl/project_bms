@@ -1,137 +1,173 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Pilih Lokasi Gedung | Project BMS</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-
-    <!-- Load Font & CSS Bawaan Metronic -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-
-    <!-- Custom CSS untuk efek hover kartu -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Lokasi - Javadwipa BMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .building-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-        .building-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            border-color: #009ef7 !important; /* Warna Primary Metronic */
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .building-card { transition: all 0.3s ease; }
+        .building-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
     </style>
 </head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 flex flex-col min-h-screen">
 
-<body id="kt_body" class="bg-body">
-    <!-- Main Container -->
-    <div class="d-flex flex-column flex-root">
-        <div class="d-flex flex-column flex-column-fluid">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-building"></i>
+            </div>
+            <span class="font-bold text-lg text-gray-800 tracking-tight">Javadwipa BMS</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex flex-col items-end">
+                <span class="text-sm font-semibold text-gray-700">{{ Auth::user()->name ?? 'Administrator' }}</span>
+                <span class="text-xs text-gray-500">Super Admin</span>
+            </div>
+            <div class="h-8 w-8 rounded-full bg-gray-200 overflow-hidden border border-gray-300 cursor-pointer">
+                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name ?? 'Admin' }}&background=random" alt="Admin">
+            </div>
 
-            <!-- Konten Tengah -->
-            <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+            <form action="{{ route('logout') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="ml-2 text-gray-400 hover:text-red-500 transition" title="Logout" onclick="return confirm('Yakin ingin keluar?')">
+                    <i class="fas fa-sign-out-alt text-lg"></i>
+                </button>
+            </form>
+        </div>
+    </nav>
 
-                <!-- Logo -->
-                <a href="#" class="mb-12">
-                    <img alt="Logo" src="{{ asset('assets/media/logos/logo-javadwipa.png') }}" class="h-60px" />
-                </a>
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <div class="container mx-auto px-6 py-12 max-w-7xl">
 
-                <!-- Card Wrapper -->
-                <div class="w-lg-900px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto border">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Pilih Lokasi Gedung</h1>
+                <p class="text-gray-500 text-lg">Silakan pilih gedung yang ingin Anda pantau. Setiap lokasi memiliki dashboard monitoringnya masing-masing.</p>
+            </div>
 
-                    <!-- Header Teks -->
-                    <div class="text-center mb-10">
-                        <h1 class="text-dark mb-3 fs-1">Pilih Lokasi Gedung</h1>
-                        <div class="text-gray-400 fw-bold fs-4">
-                            Halo, <span class="text-primary">{{ Auth::user()->name ?? 'User' }}</span>.
-                            Pilih gedung yang ingin Anda kelola.
-                        </div>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-                    <!-- Cek jika data gedung kosong -->
-                    @if(isset($gedungList) && $gedungList->isEmpty())
-                        <div class="alert alert-warning d-flex align-items-center p-5 mb-10">
-                            <!-- Icon Warning -->
-                            <span class="svg-icon svg-icon-2hx svg-icon-warning me-4">
-                                <i class="fas fa-exclamation-triangle fs-2"></i>
+                {{-- Loop Data Gedung (Static Demo) --}}
+
+                <!-- Card Gedung 1 -->
+                <div onclick="window.location='{{ route('dashboard', ['id' => 1]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
+                    <div class="h-56 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="bg-green-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> ONLINE
                             </span>
-                            <div class="d-flex flex-column">
-                                <h4 class="mb-1 text-dark">Data Kosong</h4>
-                                <span>Belum ada data gedung yang tersedia. Silakan hubungi Super Admin.</span>
-                            </div>
                         </div>
-                    @else
-                        <!-- Grid Gedung -->
-                        <div class="row g-6 g-xl-9">
-                            @foreach($gedungList as $gedung)
-                            <div class="col-md-6 col-lg-4">
-                                <!-- Form submit saat kartu diklik -->
-                                <form action="{{ route('building.set') }}" method="POST" class="h-100">
-                                    @csrf
-                                    <input type="hidden" name="gedung_id" value="{{ $gedung->id }}">
-
-                                    <!-- Kartu Gedung -->
-                                    <button type="submit" class="card building-card border border-dashed border-gray-300 bg-light-primary h-100 w-100 p-6 d-flex flex-column align-items-start text-start bg-white">
-
-                                        <!-- Icon / Gambar Gedung -->
-                                        <div class="symbol symbol-60px mb-5">
-                                            <div class="symbol-label bg-white border border-gray-200">
-                                                <i class="fas fa-building fs-2 text-primary"></i>
-                                            </div>
-                                        </div>
-
-                                        <!-- Informasi Gedung -->
-                                        <div class="fs-4 fw-bolder text-dark mb-2">
-                                            {{ $gedung->nama_gedung ?? $gedung->name }}
-                                        </div>
-
-                                        <div class="fw-bold text-gray-400 fs-7 mb-4">
-                                            <i class="fas fa-map-marker-alt me-1"></i>
-                                            {{Str::limit($gedung->lokasi ?? $gedung->address ?? 'Lokasi Utama', 30) }}
-                                        </div>
-
-                                        <!-- Badge Status -->
-                                        <div class="mt-auto w-100 d-flex justify-content-between align-items-center">
-                                            <span class="badge badge-light-success fw-bolder">Online</span>
-                                            <i class="fas fa-arrow-right text-gray-400"></i>
-                                        </div>
-                                    </button>
-                                </form>
-                            </div>
-                            @endforeach
-
-                            <!-- Tombol Dummy Tambah (Hanya Visual) -->
-                            <div class="col-md-6 col-lg-4">
-                                <a href="#" class="card building-card border border-dashed border-gray-300 bg-light h-100 w-100 p-6 d-flex flex-column flex-center text-center">
-                                    <span class="symbol symbol-50px mb-5">
-                                        <span class="symbol-label bg-white">
-                                            <i class="fas fa-plus fs-2 text-gray-400"></i>
-                                        </span>
-                                    </span>
-                                    <span class="fs-4 fw-bolder text-gray-600">Tambah Gedung</span>
-                                </a>
-                            </div>
+                        <div class="absolute bottom-4 left-4 z-20 text-white">
+                            <h3 class="text-xl font-bold">Gedung Pusat</h3>
+                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Jakarta Selatan</p>
                         </div>
-                    @endif
-
-                    <!-- Footer: Tombol Logout -->
-                    <div class="text-center mt-15 border-top pt-10">
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-light-danger fw-bolder px-6">
-                                <i class="fas fa-sign-out-alt me-2"></i> Keluar Akun
-                            </button>
-                        </form>
                     </div>
-
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
+                                <div class="text-lg font-bold text-gray-800">12</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
+                                <div class="text-lg font-bold text-gray-800">450 kW</div>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <button class="w-full py-2.5 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white">
+                                Masuk Dashboard <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Card Gedung 2 -->
+                <div onclick="window.location='{{ route('dashboard', ['id' => 2]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
+                    <div class="h-56 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="bg-green-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> ONLINE
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 z-20 text-white">
+                            <h3 class="text-xl font-bold">Cabang Surabaya</h3>
+                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Gubeng, Surabaya</p>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
+                                <div class="text-lg font-bold text-gray-800">8</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
+                                <div class="text-lg font-bold text-gray-800">320 kW</div>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <button class="w-full py-2.5 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white">
+                                Masuk Dashboard <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Gedung 3 -->
+                <div onclick="window.location='{{ route('dashboard', ['id' => 3]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
+                    <div class="h-56 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 grayscale">
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="bg-yellow-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                                <i class="fas fa-tools text-[10px]"></i> MAINTENANCE
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 z-20 text-white">
+                            <h3 class="text-xl font-bold">Warehouse Logistik</h3>
+                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Cikarang, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
+                                <div class="text-lg font-bold text-gray-800">2</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
+                                <div class="text-lg font-bold text-gray-800">850 kW</div>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <button class="w-full py-2.5 bg-yellow-50 text-yellow-700 font-semibold rounded-lg hover:bg-yellow-100 transition flex items-center justify-center gap-2 group-hover:bg-yellow-500 group-hover:text-white">
+                                Lihat Status <i class="fas fa-exclamation-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tambah Gedung -->
+                <div class="building-card bg-gray-50 rounded-2xl shadow-sm border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 transition h-full min-h-[350px]">
+                    <div class="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center mb-4">
+                        <i class="fas fa-plus text-2xl"></i>
+                    </div>
+                    <span class="font-semibold text-lg">Tambah Gedung Baru</span>
+                    <p class="text-sm text-gray-400 mt-2">Setup lokasi baru</p>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
 </body>
 </html>
