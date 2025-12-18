@@ -28,11 +28,12 @@
                 <div class="bg-[#2b2b40] rounded-xl p-4 border border-gray-700">
                     <div class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-1">Gedung Aktif</div>
                     <div class="flex items-center justify-between">
-                        {{-- Mengambil nama gedung dari session atau variable --}}
+                        {{-- Nama gedung aktif: prioritas dari session, lalu dari controller variable, lalu fallback --}}
                         <div class="font-bold text-white truncate text-sm">
-                            {{ $activeBuildingName ?? 'Gedung Pusat' }}
+                            {{ session('active_gedung_name') ?? $activeBuildingName ?? 'Gedung Pusat' }}
                         </div>
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        @php $status = session('active_gedung_status'); @endphp
+                        <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: {{ $status ? '#22c55e' : '#f59e0b' }}"></div>
                     </div>
                     <a href="{{ route('building.select') }}" class="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded transition flex items-center justify-center gap-2">
                         <i class="fas fa-exchange-alt"></i> Ganti Gedung
@@ -99,7 +100,7 @@
             <!-- Top Header -->
             <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20">
                 <div class="flex items-center text-gray-400">
-                    <span class="text-xs uppercase font-bold tracking-wider">{{ $activeBuildingName ?? 'Gedung Pusat' }}</span>
+                    <span class="text-xs uppercase font-bold tracking-wider">{{ session('active_gedung_name') ?? $activeBuildingName ?? 'Gedung Pusat' }}</span>
                     <i class="fas fa-chevron-right text-xs mx-2"></i>
                     <span class="text-gray-800 text-xs uppercase font-bold tracking-wider">@yield('header_title', 'Dashboard')</span>
                 </div>

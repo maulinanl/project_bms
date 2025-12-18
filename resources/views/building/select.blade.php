@@ -11,6 +11,7 @@
         body { font-family: 'Inter', sans-serif; }
         .building-card { transition: all 0.3s ease; }
         .building-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .page-hidden { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased text-gray-800 flex flex-col min-h-screen">
@@ -32,7 +33,7 @@
                 <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name ?? 'Admin' }}&background=random" alt="Admin">
             </div>
 
-            <form action="{{ route('logout') }}" method="POST" class="inline">
+            <form action="{{ route('auth.logout') }}" method="POST" class="inline">
                 @csrf
                 <button type="submit" class="ml-2 text-gray-400 hover:text-red-500 transition" title="Logout" onclick="return confirm('Yakin ingin keluar?')">
                     <i class="fas fa-sign-out-alt text-lg"></i>
@@ -42,7 +43,7 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="flex-1 overflow-y-auto">
+    <section id="buildingList" class="page-section flex-1 overflow-y-auto">
         <div class="container mx-auto px-6 py-12 max-w-7xl">
 
             <div class="text-center max-w-2xl mx-auto mb-16">
@@ -52,112 +53,59 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-                {{-- Loop Data Gedung (Static Demo) --}}
+                {{-- Dynamic loop of buildings from database --}}
+                @forelse($gedungList as $gedung)
+                    <form id="select-gedung-{{ $gedung->id }}" action="{{ route('building.set') }}" method="POST" class="hidden">@csrf<input type="hidden" name="gedung_id" value="{{ $gedung->id }}"></form>
 
-                <!-- Card Gedung 1 -->
-                <div onclick="window.location='{{ route('dashboard', ['id' => 1]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
-                    <div class="h-56 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                        <div class="absolute top-4 right-4 z-20">
-                            <span class="bg-green-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
-                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> ONLINE
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4 z-20 text-white">
-                            <h3 class="text-xl font-bold">Gedung Pusat</h3>
-                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Jakarta Selatan</p>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
-                                <div class="text-lg font-bold text-gray-800">12</div>
+                    <div class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden group flex flex-col h-full">
+                        <div class="h-56 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                            @php
+                                $img = $gedung->foto_building ? asset($gedung->foto_building) : 'https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+                            @endphp
+                            <img src="{{ $img }}" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 {{ $gedung->gateway_status ? '' : 'grayscale' }}">
+                            <div class="absolute top-4 right-4 z-20">
+                                @if($gedung->gateway_status)
+                                    <span class="bg-green-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> ONLINE
+                                    </span>
+                                @else
+                                    <span class="bg-yellow-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                                        <i class="fas fa-tools text-[10px]"></i> MAINTENANCE
+                                    </span>
+                                @endif
                             </div>
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
-                                <div class="text-lg font-bold text-gray-800">450 kW</div>
+                            <div class="absolute bottom-4 left-4 z-20 text-white">
+                                <h3 class="text-xl font-bold">{{ $gedung->building_name }}</h3>
+                                <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> {{ $gedung->building_adress }}</p>
                             </div>
                         </div>
-                        <div class="mt-auto">
-                            <button class="w-full py-2.5 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white">
-                                Masuk Dashboard <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card Gedung 2 -->
-                <div onclick="window.location='{{ route('dashboard', ['id' => 2]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
-                    <div class="h-56 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                        <div class="absolute top-4 right-4 z-20">
-                            <span class="bg-green-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
-                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> ONLINE
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4 z-20 text-white">
-                            <h3 class="text-xl font-bold">Cabang Surabaya</h3>
-                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Gubeng, Surabaya</p>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
-                                <div class="text-lg font-bold text-gray-800">8</div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                    <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
+                                    <div class="text-lg font-bold text-gray-800">{{ $gedung->lantai_count ?? 0 }}</div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg text-center">
+                                    <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
+                                    <div class="text-lg font-bold text-gray-800">{{ $gedung->building_daya ?? 0 }} kW</div>
+                                </div>
                             </div>
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
-                                <div class="text-lg font-bold text-gray-800">320 kW</div>
+                            <div class="mt-auto">
+                                <button type="button" onclick="document.getElementById('select-gedung-{{ $gedung->id }}').submit()" class="w-full py-2.5 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white">
+                                    Masuk Dashboard <i class="fas fa-arrow-right"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="mt-auto">
-                            <button class="w-full py-2.5 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white">
-                                Masuk Dashboard <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
                     </div>
-                </div>
-
-                <!-- Card Gedung 3 -->
-                <div onclick="window.location='{{ route('dashboard', ['id' => 3]) }}'" class="building-card bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden cursor-pointer group flex flex-col h-full">
-                    <div class="h-56 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Building" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 grayscale">
-                        <div class="absolute top-4 right-4 z-20">
-                            <span class="bg-yellow-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
-                                <i class="fas fa-tools text-[10px]"></i> MAINTENANCE
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4 z-20 text-white">
-                            <h3 class="text-xl font-bold">Warehouse Logistik</h3>
-                            <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt mr-1"></i> Cikarang, Jawa Barat</p>
-                        </div>
+                @empty
+                    <div class="col-span-3 text-center text-gray-500 py-12">
+                        Belum ada gedung. Klik "Tambah Gedung Baru" untuk menambahkan lokasi.
                     </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Lantai</div>
-                                <div class="text-lg font-bold text-gray-800">2</div>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-lg text-center">
-                                <div class="text-xs text-gray-400 uppercase font-semibold">Power</div>
-                                <div class="text-lg font-bold text-gray-800">850 kW</div>
-                            </div>
-                        </div>
-                        <div class="mt-auto">
-                            <button class="w-full py-2.5 bg-yellow-50 text-yellow-700 font-semibold rounded-lg hover:bg-yellow-100 transition flex items-center justify-center gap-2 group-hover:bg-yellow-500 group-hover:text-white">
-                                Lihat Status <i class="fas fa-exclamation-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
 
                 <!-- Tambah Gedung -->
-                <div class="building-card bg-gray-50 rounded-2xl shadow-sm border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 transition h-full min-h-[350px]">
+                <div onclick="window.location='{{ route('building.create') }}'" class="building-card bg-gray-50 rounded-2xl shadow-sm border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 transition h-full min-h-[350px]">
                     <div class="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center mb-4">
                         <i class="fas fa-plus text-2xl"></i>
                     </div>
@@ -167,7 +115,9 @@
 
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Add-building page moved to its own view (building.create) -->
 
 </body>
 </html>

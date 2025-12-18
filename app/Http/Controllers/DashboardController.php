@@ -9,7 +9,8 @@ class DashboardController extends Controller
 {
     public function selectBuilding()
     {
-        $gedungList = Gedung::all();
+        // Eager load the count of floors (lantai) to display in the view
+        $gedungList = Gedung::withCount('lantai')->get();
         return view('building.select', compact('gedungList'));
     }
 
@@ -23,11 +24,16 @@ class DashboardController extends Controller
 
         session([
             'active_gedung_id'   => $gedung->id,
-            'active_gedung_name' => $gedung->nama_gedung ?? $gedung->name,
-            'active_gedung_lokasi' => $gedung->lokasi ?? $gedung->address ?? 'Lokasi Utama',
+            // Gedung model columns use 'building_name' and 'building_adress'
+            'active_gedung_name' => $gedung->building_name ?? $gedung->name ?? 'Gedung',
+            'active_gedung_lokasi' => $gedung->building_adress ?? $gedung->lokasi ?? 'Lokasi Utama',
+            'active_gedung_status' => $gedung->gateway_status ?? 0,
+            'active_gedung_daya' => $gedung->building_daya ?? 0,
         ]);
 
-        return redirect()->route('dashboard');
+        // Redirect to dashboard while preserving the selected building id as a query
+        // parameter so the URL/layout matches the previous behaviour (e.g. /dashboard?id=1).
+        return redirect()->route('dashboard', ['id' => $gedung->id]);
     }
 
     public function index()
