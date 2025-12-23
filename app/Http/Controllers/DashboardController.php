@@ -50,4 +50,100 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('activeGedungName'));
     }
-}
+
+    /**
+     * Show Power System page (Device Control -> Power System)
+     */
+    public function power()
+    {
+        if (! session()->has('active_gedung_id')) {
+            return redirect()->route('building.select');
+        }
+
+        $activeGedungName = session('active_gedung_name');
+        // Load gedung with related devices: mainPower and ruangan -> hvac/lighting/singlePower
+        $gedung = Gedung::with(['mainPower', 'lantai.ruangan.hvac', 'lantai.ruangan.lighting', 'lantai.ruangan.singlePower'])
+            ->find(session('active_gedung_id'));
+
+        // Flatten devices
+        $mainPowers = $gedung->mainPower ?? collect();
+
+        $hvacs = collect();
+        $lightings = collect();
+        $singlePowers = collect();
+
+        if ($gedung && $gedung->lantai) {
+            foreach ($gedung->lantai as $lantai) {
+                if ($lantai->ruangan) {
+                    foreach ($lantai->ruangan as $ruangan) {
+                        if ($ruangan->hvac) $hvacs = $hvacs->concat($ruangan->hvac);
+                        if ($ruangan->lighting) $lightings = $lightings->concat($ruangan->lighting);
+                        if ($ruangan->singlePower) $singlePowers = $singlePowers->concat($ruangan->singlePower);
+                    }
+                }
+            }
+        }
+
+        return view('dashboard.power', compact('activeGedungName', 'gedung', 'mainPowers', 'hvacs', 'lightings', 'singlePowers'));
+    }
+
+    /**
+     * Show HVAC System page (Device Control -> HVAC System)
+     */
+    public function hvac()
+    {
+        if (! session()->has('active_gedung_id')) {
+            return redirect()->route('building.select');
+        }
+
+        $activeGedungName = session('active_gedung_name');
+        // Load gedung with related devices: hvac from lantai -> ruangan
+        $gedung = Gedung::with(['lantai.ruangan.hvac'])
+            ->find(session('active_gedung_id'));
+
+        // Flatten HVAC devices
+        $hvacs = collect();
+
+        if ($gedung && $gedung->lantai) {
+            foreach ($gedung->lantai as $lantai) {
+                if ($lantai->ruangan) {
+                    foreach ($lantai->ruangan as $ruangan) {
+                        if ($ruangan->hvac) $hvacs = $hvacs->concat($ruangan->hvac);
+                    }
+                }
+            }
+        }
+
+        return view('dashboard.hvac', compact('activeGedungName', 'gedung', 'hvacs'));
+    }
+
+        /**
+         * Show Lighting System page (Device Control -> Lighting System)
+         */
+        public function lighting()
+        {
+            if (! session()->has('active_gedung_id')) {
+                return redirect()->route('building.select');
+            }
+
+            $activeGedungName = session('active_gedung_name');
+            // Load gedung with related devices: lighting from lantai -> ruangan
+            $gedung = Gedung::with(['lantai.ruangan.lighting'])
+                ->find(session('active_gedung_id'));
+
+            // Flatten Lighting devices
+            $lightings = collect();
+
+            if ($gedung && $gedung->lantai) {
+                foreach ($gedung->lantai as $lantai) {
+                    if ($lantai->ruangan) {
+                        foreach ($lantai->ruangan as $ruangan) {
+                            if ($ruangan->lighting) $lightings = $lightings->concat($ruangan->lighting);
+                        }
+                    }
+                }
+            }
+
+            return view('dashboard.lighting', compact('activeGedungName', 'gedung', 'lightings'));
+        }
+    }

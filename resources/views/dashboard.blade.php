@@ -6,16 +6,13 @@
 @section('content')
 <div class="flex justify-between items-end mb-8">
     <div>
-        <h2 class="text-2xl font-bold text-gray-800" id="dashboard-title">Dashboard Overview</h2>
+        <h2 class="text-2xl font-bold text-gray-800" id="dashboard-title">Selamat Datang di {{ session('active_gedung_name') ?? $activeGedungName ?? 'Gedung' }}</h2>
         <p class="text-gray-500 text-sm mt-1">Laporan real-time status gedung Anda.</p>
     </div>
-    <div class="flex gap-2">
-        <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition shadow-sm">
-            <i class="fas fa-download mr-2"></i> Export
-        </button>
-        <button class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition shadow-sm shadow-blue-200">
-            <i class="fas fa-plus mr-2"></i> Quick Action
-        </button>
+    <div class="flex gap-2" id="data-range-controls">
+        <button data-range="weekly" class="px-3 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Weekly</button>
+        <button data-range="monthly" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50">Monthly</button>
+        <button data-range="yearly" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50">Yearly</button>
     </div>
 </div>
 
@@ -190,8 +187,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('powerChart');
-        if(ctx) {
-            new Chart(ctx.getContext('2d'), {
+        if (ctx) {
+            // create global chart instance so we can update it when range changes
+            window.powerChart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
@@ -244,6 +242,47 @@
                     },
                 }
             });
+
+            // helper to switch dataset for different ranges (simple simulated data)
+            function setRange(range) {
+                const buttons = document.querySelectorAll('#data-range-controls button[data-range]');
+                buttons.forEach(b => {
+                    if (b.dataset.range === range) {
+                        b.classList.remove('text-gray-600', 'bg-white', 'border');
+                        b.classList.add('bg-blue-600', 'text-white');
+                    } else {
+                        b.classList.remove('bg-blue-600', 'text-white');
+                        b.classList.add('text-gray-600', 'bg-white', 'border', 'border-gray-200');
+                    }
+                });
+
+                let labels = [];
+                let data = [];
+                if (range === 'weekly') {
+                    labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                    data = [50, 45, 120, 250, 230, 180, 90];
+                } else if (range === 'monthly') {
+                    labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    data = [120,110,140,200,230,210,190,220,240,260,230,210];
+                } else if (range === 'yearly') {
+                    labels = ['2019','2020','2021','2022','2023','2024','2025'];
+                    data = [1200,1350,1280,1450,1600,1550,1700];
+                }
+
+                window.powerChart.data.labels = labels;
+                window.powerChart.data.datasets[0].data = data;
+                window.powerChart.update();
+            }
+
+            // wire up buttons
+            document.querySelectorAll('#data-range-controls button[data-range]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setRange(this.dataset.range);
+                });
+            });
+
+            // default range
+            setRange('weekly');
         }
     });
 </script>

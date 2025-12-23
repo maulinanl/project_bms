@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'BMS - Javadwipa Technology')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -52,8 +53,29 @@
                     <span class="text-sm font-medium">Overview</span>
                 </a>
 
-                <div class="px-2 mt-6 mb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manajemen</div>
+                <div class="px-2 mt-6 mb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Device Control</div>
 
+                <a href="{{ route('dashboard.power') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('dashboard.power') ? 'bg-[#2b2b40] text-white' : 'text-gray-400 hover:text-white hover:bg-[#2b2b40]' }} rounded-lg group transition">
+                    <span class="w-8 h-8 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mr-3 group-hover:bg-yellow-500 group-hover:text-white transition">
+                        <i class="fas fa-bolt text-sm"></i>
+                    </span>
+                    <span class="text-sm font-medium">Power</span>
+                </a>
+                <a href="{{ route('dashboard.hvac') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('dashboard.hvac') ? 'bg-[#2b2b40] text-white' : 'text-gray-400 hover:text-white hover:bg-[#2b2b40]' }} rounded-lg group transition">
+                    <span class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center mr-3 group-hover:bg-cyan-500 group-hover:text-white transition">
+                        <i class="fas fa-fan text-sm"></i>
+                    </span>
+                    <span class="text-sm font-medium">HVAC</span>
+                </a>
+                <a href="{{ route('dashboard.lighting') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('dashboard.lighting') ? 'bg-[#2b2b40] text-white' : 'text-gray-400 hover:text-white hover:bg-[#2b2b40]' }} rounded-lg group transition">
+                    <span class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center mr-3 group-hover:bg-orange-500 group-hover:text-white transition">
+                        <i class="far fa-lightbulb text-sm"></i>
+                    </span>
+                    <span class="text-sm font-medium">Lighting</span>
+                </a>
+
+                <div class="px-2 mt-6 mb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Management</div>
+                
                 <a href="#" class="flex items-center px-3 py-2.5 text-gray-400 hover:text-white hover:bg-[#2b2b40] rounded-lg group transition">
                     <span class="w-8 h-8 rounded-lg bg-gray-700/50 flex items-center justify-center mr-3 group-hover:bg-gray-700 transition">
                         <i class="fas fa-layer-group text-sm"></i>
@@ -61,26 +83,6 @@
                     <span class="text-sm font-medium">Data Lantai & Ruang</span>
                 </a>
 
-                <div class="px-2 mt-6 mb-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Device Control</div>
-
-                <a href="#" class="flex items-center px-3 py-2.5 text-gray-400 hover:text-white hover:bg-[#2b2b40] rounded-lg group transition">
-                    <span class="w-8 h-8 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mr-3 group-hover:bg-yellow-500 group-hover:text-white transition">
-                        <i class="fas fa-bolt text-sm"></i>
-                    </span>
-                    <span class="text-sm font-medium">Power System</span>
-                </a>
-                <a href="#" class="flex items-center px-3 py-2.5 text-gray-400 hover:text-white hover:bg-[#2b2b40] rounded-lg group transition">
-                    <span class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center mr-3 group-hover:bg-cyan-500 group-hover:text-white transition">
-                        <i class="fas fa-fan text-sm"></i>
-                    </span>
-                    <span class="text-sm font-medium">HVAC / AC</span>
-                </a>
-                <a href="#" class="flex items-center px-3 py-2.5 text-gray-400 hover:text-white hover:bg-[#2b2b40] rounded-lg group transition">
-                    <span class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center mr-3 group-hover:bg-orange-500 group-hover:text-white transition">
-                        <i class="far fa-lightbulb text-sm"></i>
-                    </span>
-                    <span class="text-sm font-medium">Lighting</span>
-                </a>
             </nav>
 
             <!-- User Profile Bottom -->
